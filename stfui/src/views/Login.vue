@@ -1,6 +1,12 @@
 <template>
     <div>
-        <el-form :rules="rules" ref="loginForm" :model="loginForm" class="login-form">
+        <el-form :rules="rules"
+                 v-loading="loading"
+                 element-loading-text="正在登陆中..."
+                 element-loading-background="el-icon-loading"
+                 ref="loginForm"
+                 :model="loginForm"
+                 class="login-form">
             <h3 class="title">系统登录</h3>
             <el-form-item prop="username">
                 <el-input type="text" auto-complete="false" v-model="loginForm.username"
@@ -11,9 +17,9 @@
                           placeholder="请输入密码"></el-input>
             </el-form-item>
             <el-form-item prop="code">
-                <img :src="captchaUrl" @click="updatedCaptcha">
                 <el-input type="text" auto-complete="false" v-model="loginForm.code" placeholder="点击图片更换验证码"
-                          style="width: 250px;"></el-input>
+                          style="width: 230px;"></el-input>
+                <img :src="captchaImage" @click="updatedCaptcha" style="height: 40px;margin-left: 12px;">
             </el-form-item>
             <el-form-item>
                 <el-checkbox v-model="checked">记住我</el-checkbox>
@@ -26,16 +32,18 @@
 </template>
 
 <script>
+
     export default {
         name: "Login",
         data() {
             return {
-                captchaUrl: '/captcha?time=' + new Date(),
+                captchaImage: '/captchaImage?time=' + new Date(),
                 loginForm: {
                     username: 'admin',
                     password: '123456',
                     code: ''
                 },
+                loading: false,
                 checked: true,
                 rules: {
                     username: [
@@ -51,7 +59,9 @@
             submitLoginForm() {
                 this.$refs.loginForm.validate((valid) => {
                     if (valid) {
-                        alert('submit!');
+                        this.loading = true;
+                        this.$router.push('/admin/post');
+                        this.loading = false;
                     } else {
                         this.$message.error('请输入必填的字段！！！');
                         return false;
@@ -59,7 +69,7 @@
                 });
             },
             updatedCaptcha() {
-                this.captchaUrl = '/captcha?time='+new Date();
+                this.captchaImage = '/captchaImage?time=' + new Date();
             }
         },
     }
@@ -81,7 +91,7 @@
         text-align: center;
     }
 
-    .el-form-item__content{
+    .el-form-item__content {
         display: flex;
         align-items: center;
     }

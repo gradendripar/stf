@@ -10,7 +10,7 @@ import com.google.code.kaptcha.util.Config;
 /**
  * 返回状态码
  *
- * @date 2022/9/20 100:19:17
+ * @date 2022/9/20 10:19:17
  */
 
 @Configuration
