@@ -1,25 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '../views/Login.vue'
-import Post from '../views/Post.vue'
 
 Vue.use(VueRouter);
 
 export const routes = [
-  {
-    path: '/',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/admin/post',
-    name: 'Post',
-    component: Post
-  }
+    {
+        path: '/',
+        name: 'Login',
+        component: () => import('@/views/Login.vue')
+    },
+    {
+        path: '/admin/post',
+        name: 'Post',
+        component: () => import('@/views/Post.vue')
+    }
 ];
 
 export default new VueRouter({
-  mode: 'hash',
-  base: process.env.BASE_URL,
-  routes
+    mode: 'hash',
+    base: process.env.BASE_URL,
+    routes
 });
