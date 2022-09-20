@@ -10,6 +10,6 @@ proxyObj['/'] = {
 
 module.exports = {
     devServer: {
-        porxy: proxyObj
+        proxy: proxyObj
     }
 };
