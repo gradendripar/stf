@@ -16,7 +16,7 @@ axios.interceptors.response.use(success => {
     return success.data;
 }, error => {
     if (error.response.code == 504 || error.response.code == 404) {
-        Message.error({message: '服务器被迟了o(╯□╰)o'});
+        Message.error({message: '服务器被吃了o(╯□╰)o'});
     } else if (error.response.code == 403) {
         Message.error({message: '权限不足，请联系管理员!'})
     } else if (error.response.code == 401) {
