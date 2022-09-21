@@ -4,7 +4,7 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
 import {deleteRequest, getRequest, postRequest, putRequest} from "./api/login";
-import {parseTime} from "./utils/common"
+import {parseTime,resetForm} from "./utils/common"
 
 Vue.config.productionTip = false;
 
@@ -15,6 +15,7 @@ Vue.prototype.getRequest = getRequest;
 Vue.prototype.putRequest = putRequest;
 Vue.prototype.deleteRequest = deleteRequest;
 Vue.prototype.parseTime = parseTime;
+Vue.prototype.resetForm = resetForm;
 
 new Vue({
   router,

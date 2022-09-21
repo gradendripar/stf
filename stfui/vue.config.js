@@ -33,6 +33,7 @@ module.exports = {
         https: false, // https:{type:Boolean}
         open: true, //配置后自动启动浏览器
         hotOnly: true, // 热更新
-        proxy: proxyObj
+        proxy: proxyObj,
+        disableHostCheck: true
     }
 };
