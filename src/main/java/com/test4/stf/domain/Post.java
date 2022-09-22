@@ -2,6 +2,9 @@ package com.test4.stf.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.Data;
 
 /**
@@ -10,6 +13,7 @@ import lombok.Data;
  */
 @Data
 public class Post implements Serializable {
+    private static final long serialVersionUID = 1L;
     /**
      * 帖子id
      */
@@ -51,9 +55,23 @@ public class Post implements Serializable {
     private String openStatus;
 
     /**
-     * 帖子审核状态（0为未通过，1为通过）
+     * 帖子审核状态（0为未通过，1为通过,2为未审核）
      */
     private String verifyStatus;
+    /** 请求参数 */
+    private Map<String, Object> params;
 
-    private static final long serialVersionUID = 1L;
+    public Map<String, Object> getParams()
+    {
+        if (params == null)
+        {
+            params = new HashMap<>();
+        }
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params)
+    {
+        this.params = params;
+    }
 }

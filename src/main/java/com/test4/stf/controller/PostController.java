@@ -1,11 +1,10 @@
 package com.test4.stf.controller;
 
 import com.test4.stf.common.AjaxResult;
+import com.test4.stf.domain.Post;
 import com.test4.stf.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 
@@ -19,7 +18,8 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/list")
-    public AjaxResult selectPostList(){
-        return AjaxResult.success(postService.selectPostList());
+    public AjaxResult selectPostList(Post post){
+        System.out.println(post);
+        return AjaxResult.success(postService.selectPostList(post));
     }
 }

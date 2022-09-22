@@ -13,15 +13,13 @@ import java.util.List;
  *
  */
 @Service
-public class PostServiceImpl extends ServiceImpl<PostMapper, Post>
-    implements PostService{
-
+public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements PostService{
     @Autowired
     private PostMapper postMapper;
 
     @Override
-    public List<Post> selectPostList() {
-        return postMapper.selectPostList();
+    public List<Post> selectPostList(Post post) {
+        return postMapper.selectPostList(post);
     }
 }
 

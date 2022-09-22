@@ -73,10 +73,10 @@
           </el-form-item>
           <el-form-item label="帖子发表时间">
             <el-date-picker
-                v-model="daterangeStartTime"
+                v-model="dateRangeTime"
                 style="width: 240px"
                 value-format="yyyy-MM-dd"
-                type="date range"
+                type="daterange"
                 range-separator="-"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期">
@@ -137,28 +137,18 @@
               <span>{{ parseTime(scope.row.created, '{y}-{m}-{d} {h}:{m}:{s}') }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="帖子关闭状态" align="center" prop="openStatus"/>
+          <el-table-column label="帖子关闭状态" align="center" prop="openStatus">
             <template v-slot="scope">
-              <el-tag
-                  :key="openItem"
-                  :type="''"
-                  effect="dark">
-                {{ openItem }}
-              </el-tag>
+              <el-tag effect="dark">{{ scope.row.openStatus }}</el-tag>
             </template>
+          </el-table-column>
           <el-table-column label="帖子审核状态" align="center" prop="verifyStatus">
-<!--            <template v-slot="scope">-->
-<!--              <el-tag-->
-<!--                  v-for="item in openstatus"-->
-<!--                  :key="item.label"-->
-<!--                  :type="item.type"-->
-<!--                  effect="dark">-->
-<!--                {{ scope }}-->
-<!--              </el-tag>-->
-<!--            </template>-->
+            <template v-slot="scope">
+              <el-tag effect="dark">{{ scope.row.verifyStatus }}</el-tag>
+            </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-button
                   size="mini"
                   type="text"
@@ -242,7 +232,7 @@ export default {
       // 是否显示弹出层
       open: false,
       // 日期范围
-      daterangeStartTime: [],
+      dateRangeTime: [],
       // 查询参数
       queryParams: {
         title: null,
@@ -271,8 +261,6 @@ export default {
           {required: true, message: "帖子发表时间不能为空", trigger: "blur"}
         ]
       },
-      openItem: null,
-      verifyItem: null
     }
   },
   computed: {
@@ -297,14 +285,30 @@ export default {
     /** 查询帖子列表 */
     getList() {
       this.loading = true;
-      this.getRequest('/post/list').then(response => {
+      this.queryParams.params = {};
+      if (null != this.dateRangeTime && '' !== this.dateRangeTime) {
+        this.queryParams.params["beginCreated"] = this.dateRangeTime[0];
+        this.queryParams.params["endCreated"] = this.dateRangeTime[1];
+      }
+      console.log(this.queryParams)
+      this.getRequest('/post/list',this.queryParams).then(response => {
         this.postList = response.data;
-        this.postList.forEach(item =>{
-          if (item.openStatus === '1'){
-            this.postList.push({ open : "打开"})
+        this.postList.forEach(open => {
+          if (open.openStatus === '1') {
+            open.openStatus = "打开"
+          } else {
+            open.openStatus = "关闭"
           }
-        })
-        console.log(this.postList)
+        });
+        this.postList.forEach(verify => {
+          if (verify.verifyStatus === '1') {
+            verify.verifyStatus = "通过"
+          } else if (verify.verifyStatus === '0') {
+            verify.verifyStatus = "未通过"
+          } else {
+            verify.verifyStatus = "未审核"
+          }
+        });
         this.loading = false
       });
     },
@@ -332,12 +336,11 @@ export default {
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
       this.getList();
     },
     /** 重置按钮操作 */
     resetQuery() {
-      this.daterangeStartTime = [];
+      this.dateRangeTime = [];
       this.resetForm("queryForm");
       this.handleQuery();
     },
