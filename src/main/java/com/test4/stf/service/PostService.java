@@ -9,6 +9,13 @@ import java.util.List;
  *
  */
 public interface PostService extends IService<Post> {
-    List<Post> selectPostList(Post post);
+    public List<Post> selectPostList(Post post);
 
+    public Post selectPostById(Long id);
+
+    public int insertPost(Post post);
+
+    public int updatePost(Post post);
+
+    public int deletePostById(Long id);
 }

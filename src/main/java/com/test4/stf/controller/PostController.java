@@ -13,13 +13,28 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/post")
-public class PostController {
+public class PostController extends BaseController{
     @Autowired
     private PostService postService;
 
     @GetMapping("/list")
     public AjaxResult selectPostList(Post post){
-        System.out.println(post);
         return AjaxResult.success(postService.selectPostList(post));
+    }
+    @GetMapping(value = "/{id}")
+    public AjaxResult selectPostById(@PathVariable("id") Long id){
+        return AjaxResult.success(postService.selectPostById(id));
+    }
+    @PutMapping
+    public AjaxResult addPost(@RequestBody Post post){
+        return toAjax(postService.insertPost(post));
+    }
+    @PostMapping
+    public AjaxResult editPost(@RequestBody Post post){
+        return toAjax(postService.updatePost(post));
+    }
+    @DeleteMapping(value = "/{id}")
+    public AjaxResult remove(@PathVariable Long id){
+        return toAjax(postService.deletePostById(id));
     }
 }

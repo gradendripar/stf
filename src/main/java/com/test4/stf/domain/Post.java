@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * 
@@ -47,6 +47,7 @@ public class Post implements Serializable {
     /**
      * 帖子发表时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date created;
 
     /**

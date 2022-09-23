@@ -5,20 +5,20 @@
 <mapper namespace="com.test4.stf.mapper.PostMapper">
 
     <resultMap id="PostList" type="com.test4.stf.domain.Post">
-            <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="author" column="author" jdbcType="VARCHAR"/>
-            <result property="content" column="content" jdbcType="VARCHAR"/>
-            <result property="slug" column="slug" jdbcType="VARCHAR"/>
-            <result property="tag" column="tag" jdbcType="VARCHAR"/>
-            <result property="created" column="created" jdbcType="TIMESTAMP"/>
-            <result property="openStatus" column="open_status" jdbcType="CHAR"/>
-            <result property="verifyStatus" column="verify_status" jdbcType="CHAR"/>
+            <id property="id" column="id"/>
+            <result property="title" column="title"/>
+            <result property="author" column="author"/>
+            <result property="content" column="content"/>
+            <result property="slug" column="slug"/>
+            <result property="tag" column="tag"/>
+            <result property="created" column="created"/>
+            <result property="openStatus" column="open_status"/>
+            <result property="verifyStatus" column="verify_status"/>
     </resultMap>
 
     <sql id="PostListVo">id,title,author,content,slug,tag,created,open_status,verify_status</sql>
 
-    <select id="selectPostList" resultMap="PostList">
+    <select id="selectPostList" parameterType="Post" resultMap="PostList">
         select
         <include refid="PostListVo"/>
         from post
@@ -27,12 +27,54 @@
             <if test="params.beginCreated != null and params.beginCreated != '' and params.endCreated != null and params.endCreated != ''"> and created between #{params.beginCreated} and #{params.endCreated}</if>
         </where>
     </select>
-    <select id="searchAllById" resultMap="PostList">
+    <select id="selectPostById" parameterType="Long" resultMap="PostList">
         select
         <include refid="PostListVo"/>
         from post
-        where
-        id = #{id,jdbcType=NUMERIC}
+        where id = #{id}
     </select>
+    <insert id="insertPost" parameterType="Post" keyProperty="id">
+        insert into post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="title != null">title,</if>
+            <if test="author != null">author,</if>
+            <if test="content != null">content,</if>
+            <if test="slug != null">slug,</if>
+            <if test="tag != null">tag,</if>
+            <if test="created != null">created,</if>
+            <if test="openStatus != null">open_status,</if>
+            <if test="verifyStatus != null">verify_status,</if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="title != null">#{title},</if>
+            <if test="author != null">#{author},</if>
+            <if test="content != null">#{content},</if>
+            <if test="slug != null">#{slug},</if>
+            <if test="tag != null">#{tag},</if>
+            <if test="created != null">#{created},</if>
+            <if test="openStatus != null">#{openStatus},</if>
+            <if test="verifyStatus != null">#{verifyStatus},</if>
+        </trim>
+    </insert>
+    <update id="updatePost" parameterType="Post">
+        update post
+        <set>
+            <if test="title != null">title=#{title,},</if>
+            <if test="author != null">author=#{author,},</if>
+            <if test="content != null">content=#{content,},</if>
+            <if test="slug != null">slug=#{slug,},</if>
+            <if test="tag != null">tag=#{tag,},</if>
+            <if test="created != null">created=#{created,},</if>
+            <if test="openStatus != null">open_status=#{openStatus,},</if>
+            <if test="verifyStatus != null">verify_status=#{verifyStatus,},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <delete id="deletePostById" parameterType="Long">
+        delete from post where id = #{id}
+    </delete>
 
 </mapper>

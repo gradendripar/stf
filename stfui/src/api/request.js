@@ -1,6 +1,9 @@
 import axios from 'axios'
 import {Message} from "element-ui";
 import router from "../router";
+import {tansParams} from "@/utils/common";
+
+axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 
 axios.interceptors.response.use(success => {
     //业务逻辑错误
@@ -33,16 +36,18 @@ axios.interceptors.response.use(success => {
 });
 
 let base = '';
+export const getRequest = (url, params) => {
+    if (params!=null){
+        url = `${base}${url}`+ '?' + tansParams(params)
+    }
+    return axios({
+        method: 'get',
+        url: url,
+    })
+};
 export const postRequest = (url, params) => {
     return axios({
         method: 'post',
-        url: `${base}${url}`,
-        data: params
-    })
-};
-export const getRequest = (url, params) => {
-    return axios({
-        method: 'get',
         url: `${base}${url}`,
         data: params
     })
@@ -58,6 +63,5 @@ export const deleteRequest = (url, params) => {
     return axios({
         method: 'delete',
         url: `${base}${url}`,
-        data: params
     })
 };

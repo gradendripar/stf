@@ -139,12 +139,19 @@
           </el-table-column>
           <el-table-column label="帖子关闭状态" align="center" prop="openStatus">
             <template v-slot="scope">
-              <el-tag effect="dark">{{ scope.row.openStatus }}</el-tag>
+              <el-tag effect="dark">
+                <span v-if="scope.row.openStatus==='1'">打开</span>
+                <span v-else>关闭</span>
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column label="帖子审核状态" align="center" prop="verifyStatus">
             <template v-slot="scope">
-              <el-tag effect="dark">{{ scope.row.verifyStatus }}</el-tag>
+              <el-tag effect="dark">
+                <span v-if="scope.row.verifyStatus==='1'">通过</span>
+                <span v-else-if="scope.row.verifyStatus==='0'">未通过</span>
+                <span v-else>未审核</span>
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -163,12 +170,18 @@
                   @click="handleDelete(scope.row)"
               >删除
               </el-button>
+              <el-button
+                  size="mini"
+                  type="text"
+                  icon="el-icon-view"
+                  @click="handleView(scope.row,scope.index)"
+              >详细</el-button>
             </template>
           </el-table-column>
         </el-table>
 
         <!-- 添加或修改活动信息对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+        <el-dialog :title="title" :visible.sync="open" width="85%" append-to-body>
           <el-form ref="form" :model="form" :rules="rules" label-width="80px">
             <el-form-item label="帖子标题" prop="title">
               <el-input v-model="form.title" placeholder="请输入帖子标题"/>
@@ -177,15 +190,15 @@
               <el-input v-model="form.author" placeholder="请输入帖子作者"/>
             </el-form-item>
             <el-form-item label="帖子内容" prop="content">
-              <el-input v-model="form.content" placeholder="请输入帖子内容"/>
+              <quill-editor v-model="form.content" placeholder="请输入帖子内容"></quill-editor>
             </el-form-item>
-            <el-form-item label="帖子所属栏目" prop="slug">
+            <el-form-item label="所属栏目" prop="slug">
               <el-input v-model="form.slug" placeholder="请输入帖子所属栏目"/>
             </el-form-item>
             <el-form-item label="帖子标签" prop="tag">
               <el-input v-model="form.tag" placeholder="请输入帖子标签"/>
             </el-form-item>
-            <el-form-item label="帖子发表时间" prop="created">
+            <el-form-item label="发表时间" prop="created">
               <el-date-picker clearable
                               v-model="form.created"
                               type="datetime"
@@ -194,16 +207,58 @@
                               placeholder="请选择帖子发表时间">
               </el-date-picker>
             </el-form-item>
-            <el-form-item label="帖子关闭状态" prop="openStatus">
-              <el-input v-model="form.open_status" placeholder="请输入帖子关闭状态"/>
+            <el-form-item label="关闭状态" prop="openStatus">
+              <el-radio-group v-model="form.openStatus">
+                <el-radio :key="'0'" :label="'0'">关闭</el-radio>
+                <el-radio :key="'1'" :label="'1'">打开</el-radio>
+              </el-radio-group>
             </el-form-item>
-            <el-form-item label="帖子审核状态" prop="verifyStatus">
-              <el-input v-model="form.verify_status" placeholder="请输入帖子审核状态"/>
+            <el-form-item label="审核状态" prop="verifyStatus">
+              <el-radio-group v-model="form.verifyStatus">
+                <el-radio :key="'0'" :label="'0'">未通过</el-radio>
+                <el-radio :key="'1'" :label="'1'">通过</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-form>
           <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="submitForm">确 定</el-button>
             <el-button @click="cancel">取 消</el-button>
+          </div>
+        </el-dialog>
+
+        <!-- 操作日志详细 -->
+        <el-dialog title="帖子详情" :visible.sync="detail" width="700px" append-to-body>
+          <el-form ref="form" :model="form" label-width="100px" size="mini">
+            <el-row>
+              <el-col :span="12">
+                <el-form-item label="帖子标题：">{{ form.title }}</el-form-item>
+                <el-form-item label="帖子作者：">{{ form.author }}</el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="帖子内容：">{{ form.content }}</el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="帖子所属栏目：">{{ form.slug }}</el-form-item>
+                <el-form-item label="帖子标签：">{{ form.tag }}</el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="帖子发表时间：">{{ parseTime(form.created) }}</el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="帖子关闭状态：">
+                  <div v-if="form.openStatus === '1'">打开</div>
+                  <div v-else-if="form.openStatus === '0'">关闭</div>
+                </el-form-item>
+                <el-form-item label="帖子审核状态：">
+                  <div v-if="form.verifyStatus === '0'">未通过</div>
+                  <div v-else-if="form.verifyStatus === '1'">通过</div>
+                  <div v-else>未审核</div>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="detail = false">关 闭</el-button>
           </div>
         </el-dialog>
       </el-main>
@@ -231,6 +286,7 @@ export default {
       title: "",
       // 是否显示弹出层
       open: false,
+      detail: false,
       // 日期范围
       dateRangeTime: [],
       // 查询参数
@@ -290,25 +346,8 @@ export default {
         this.queryParams.params["beginCreated"] = this.dateRangeTime[0];
         this.queryParams.params["endCreated"] = this.dateRangeTime[1];
       }
-      console.log(this.queryParams)
-      this.getRequest('/post/list',this.queryParams).then(response => {
+      this.getRequest('/post/list', this.queryParams).then(response => {
         this.postList = response.data;
-        this.postList.forEach(open => {
-          if (open.openStatus === '1') {
-            open.openStatus = "打开"
-          } else {
-            open.openStatus = "关闭"
-          }
-        });
-        this.postList.forEach(verify => {
-          if (verify.verifyStatus === '1') {
-            verify.verifyStatus = "通过"
-          } else if (verify.verifyStatus === '0') {
-            verify.verifyStatus = "未通过"
-          } else {
-            verify.verifyStatus = "未审核"
-          }
-        });
         this.loading = false
       });
     },
@@ -329,8 +368,8 @@ export default {
         slug: null,
         tag: null,
         created: null,
-        open_status: "1",
-        verify_status: "0"
+        open_status: null,
+        verify_status: null
       };
       this.resetForm("form");
     },
@@ -361,36 +400,43 @@ export default {
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getActivity(id).then(response => {
+      this.getRequest('/post/' + id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改活动信息";
-      });
+        this.title = "修改帖子信息";
+      })
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除活动信息编号为"' + ids + '"的数据项？').then(function () {
-        return delActivity(ids);
+      const id = row.id || this.ids;
+      // this.deleteRequest('/post/' + id).then(response =>{
+      //   console.log(response);
+      // })
+      this.$confirm('是否确认删除帖子信息编号为"' + id + '"的数据项？').then(() => {
+        return this.deleteRequest('/post/' + id);
       }).then(() => {
-        this.getList();
-        this.$modal.msgSuccess("删除成功");
-      }).catch(() => {
-      });
+          this.getList();
+          this.$message.success("删除成功");
+        }).catch(() => {});
+    },
+    /** 详细按钮操作 */
+    handleView(row) {
+      this.detail = true;
+      this.form = row;
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateActivity(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
+            this.postRequest('/post', this.form).then(response => {
+              this.$message.success("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addActivity(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
+            this.putRequest('/post', this.form).then(response => {
+              this.$message.success("新增成功");
               this.open = false;
               this.getList();
             });

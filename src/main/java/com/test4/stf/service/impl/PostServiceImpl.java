@@ -21,6 +21,26 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     public List<Post> selectPostList(Post post) {
         return postMapper.selectPostList(post);
     }
+
+    @Override
+    public Post selectPostById(Long id) {
+        return postMapper.selectPostById(id);
+    }
+
+    @Override
+    public int insertPost(Post post) {
+        return postMapper.insertPost(post);
+    }
+
+    @Override
+    public int updatePost(Post post) {
+        return postMapper.updatePost(post);
+    }
+
+    @Override
+    public int deletePostById(Long id) {
+        return postMapper.deletePostById(id);
+    }
 }
 
 
